@@ -57,15 +57,17 @@ class BrasilAPI:
 
     # multiples
 
-    def get_multiple_fipe_preco(self, tipoVeiculo: str, tabela_referencia_list: List[int] | None = None):
+    def get_multiple_fipe_preco(self, codigoFipe: str, tabela_referencia_list: List[int] | None = None):
         urls = []
 
         for tabela_referencia in tabela_referencia_list:
-            url = BrasilAPI.url_fipe_preco(self, tipoVeiculo, tabela_referencia)
+            url = BrasilAPI.url_fipe_preco(self, codigoFipe, tabela_referencia)
             urls.append(url)
 
         def fetch_url(url):
             response = requests.get(url)
+            if self.debug:
+                print(url)
             return response.json()
 
         with ThreadPoolExecutor(max_workers=5) as executor:
