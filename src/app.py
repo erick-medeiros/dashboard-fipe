@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objs as go
@@ -7,7 +7,9 @@ from BrasilAPI import BrasilAPI
 import pandas as pd
 import datetime
 
-codeFipe = "0240265"
+codeFipeDefault = "0240265"
+
+isLoading = False
 
 year_current = datetime.date.today().year
 
@@ -50,12 +52,22 @@ def get_data(codeFipe) -> pd.DataFrame:
     return df
 
 
-def get_fig():
+def get_fig(codeFipe):
     data = get_data(codeFipe)
     return px.line(data, x="mes", y="valor", color="ano")
 
 
-fig = get_fig()
+@callback(
+    Output("output-graph", "children"),
+    Input("submit-val", "n_clicks"),
+    State("input-on-submit", "value"),
+)
+def update_output(children, value):
+    if value is None:
+        return html.Div()
+    else:
+        return html.Div([dcc.Graph(id="line-graph", figure=get_fig(value))])
+
 
 app.layout = dbc.Container(
     [
@@ -67,7 +79,13 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    dcc.Graph(id="line-graph", figure=fig),
+                    html.Div(id="output-graph", children=[]),
+                ),
+                html.Div(
+                    [
+                        html.Div(dcc.Input(id="input-on-submit", type="text")),
+                        html.Button("Submit", id="submit-val", n_clicks=0),
+                    ]
                 ),
             ],
         ),

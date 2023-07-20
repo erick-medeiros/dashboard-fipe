@@ -57,7 +57,9 @@ class BrasilAPI:
 
     # multiples
 
-    def get_multiple_fipe_preco(self, codigoFipe: str, tabela_referencia_list: List[int] | None = None):
+    def get_multiple_fipe_preco(
+        self, codigoFipe: str, tabela_referencia_list: List[int] | None = None
+    ):
         urls = []
 
         for tabela_referencia in tabela_referencia_list:
