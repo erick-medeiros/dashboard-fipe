@@ -67,10 +67,13 @@ class BrasilAPI:
             urls.append(url)
 
         def fetch_url(url):
-            response = requests.get(url)
             if self.debug:
                 print(url)
-            return response.json()
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return None
 
         with ThreadPoolExecutor(max_workers=5) as executor:
             futures = [executor.submit(fetch_url, url) for url in urls]
